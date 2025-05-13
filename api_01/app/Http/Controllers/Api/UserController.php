@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserStore;
 use App\Http\Requests\UserUpdate;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Traits\ApiSorting;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 
 class UserController extends Controller implements HasMiddleware
 {
+    use ApiSorting;
+
     public static function middleware(): array
     {
         return [
@@ -22,9 +26,15 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return UserResource::collection(User::all());
+        $query = User::query();
+
+        $query = $this->sort($request, $query);
+
+        return new UserCollection(
+            $query->get()
+        );
     }
 
     /**

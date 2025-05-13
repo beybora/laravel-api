@@ -5,17 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostStore;
 use App\Http\Requests\PostUpdate;
+use App\Http\Resources\PostCollection;
 use App\Models\Post;
+use App\Traits\ApiSorting;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    use ApiSorting;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Post::all();
+        $query = Post::query();
+        $query = $this->sort($request, $query);
+
+        return new PostCollection(
+            $query->get()
+        );
     }
 
     /**
