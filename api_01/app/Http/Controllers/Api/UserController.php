@@ -9,6 +9,7 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Traits\ApiFiltering;
+use App\Traits\ApiPagination;
 use App\Traits\ApiSorting;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -17,6 +18,7 @@ class UserController extends Controller implements HasMiddleware
 {
     use ApiSorting;
     use ApiFiltering;
+    use ApiPagination;
 
     public static function middleware(): array
     {
@@ -38,7 +40,7 @@ class UserController extends Controller implements HasMiddleware
         $query = $this->filter($request, $query, $allowedFilterColumns);
 
         return new UserCollection(
-            $query->get()
+            $query->paginate($this->getPerPage($request))
         );
     }
 
