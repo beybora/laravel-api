@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserStore;
 use App\Http\Requests\UserUpdate;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -23,7 +24,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function index()
     {
-        return User::all();
+        return UserResource::collection(User::all());
     }
 
     /**
@@ -31,7 +32,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function store(UserStore $request)
     {
-        return User::create($request->all());
+        return new UserResource(User::create($request->all()));
     }
 
     /**
@@ -39,7 +40,7 @@ class UserController extends Controller implements HasMiddleware
      */
     public function show(User $user)
     {
-        return  $user;
+        return new UserResource($user);
     }
 
     /**
@@ -47,7 +48,8 @@ class UserController extends Controller implements HasMiddleware
      */
     public function update(UserUpdate $request, User $user)
     {
-        //
+        $user->update(($request->all()));
+        return $user;
     }
 
     /**
