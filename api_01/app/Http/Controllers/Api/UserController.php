@@ -8,6 +8,7 @@ use App\Http\Requests\UserUpdate;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Traits\ApiFiltering;
 use App\Traits\ApiSorting;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -15,6 +16,7 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 class UserController extends Controller implements HasMiddleware
 {
     use ApiSorting;
+    use ApiFiltering;
 
     public static function middleware(): array
     {
@@ -30,7 +32,10 @@ class UserController extends Controller implements HasMiddleware
     {
         $query = User::query();
 
+        $allowedFilterColumns = ['name', 'email'];
+
         $query = $this->sort($request, $query);
+        $query = $this->filter($request, $query, $allowedFilterColumns);
 
         return new UserCollection(
             $query->get()
