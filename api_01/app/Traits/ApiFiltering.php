@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Exceptions\ApiFilteringInvalidAttributeException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,10 @@ trait ApiFiltering
         $filterArray = $request->query('filter', []);
 
         foreach ($filterArray as $filterKey => $filterValue) {
-            // where email LIKE 'abcdef'
             if (!in_array($filterKey, $allowedFilterColumns)) {
-                continue;
+                $exception = new ApiFilteringInvalidAttributeException("This column " . $filterKey . " is not alloweder to be filtered!", 1);
+                $exception->setColumnName($filterKey);
+                throw $exception;
             }
 
             return $query->where($filterKey, 'LIKE', '%' . $filterValue . '%');

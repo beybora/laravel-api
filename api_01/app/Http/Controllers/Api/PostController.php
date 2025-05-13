@@ -7,19 +7,21 @@ use App\Http\Requests\PostStore;
 use App\Http\Requests\PostUpdate;
 use App\Http\Resources\PostCollection;
 use App\Models\Post;
+use App\Traits\ApiFiltering;
 use App\Traits\ApiSorting;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     use ApiSorting;
-
+    use ApiFiltering;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $query = Post::query();
+        $query = $this->filter($request, $query);
         $query = $this->sort($request, $query);
 
         return new PostCollection(
