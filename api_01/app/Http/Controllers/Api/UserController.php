@@ -7,9 +7,17 @@ use App\Http\Requests\UserStore;
 use App\Http\Requests\UserUpdate;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            'auth:sanctum',
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
